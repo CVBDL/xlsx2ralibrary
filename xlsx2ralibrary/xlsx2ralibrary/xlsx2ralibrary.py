@@ -11,6 +11,22 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('RaLibraryImportTool')
 
+def parse_cli_args():
+    # process command line parameters
+    parser = argparse.ArgumentParser(description='Import books to RaLibrary.')
+    parser.add_argument('--user-name', help='RA-INT account name without ra-int perfix.')
+    parser.add_argument('--password', help='RA-INT account password.')
+    parser.add_argument('--path', help='Input file path.')
+    args = parser.parse_args()
+    # validate authentication info
+    if not args.user_name or not args.password:
+        logger.info('[Abort] Missing accout name or password')
+        raise Exception
+    # validate existence of input excel file
+    if not args.path:
+        logger.info('[Abort] Missing input file path.')
+        raise Exception
+    return args
 
 def login(username, password):
     logger.info('Identifying...')
@@ -38,7 +54,7 @@ def query_book(isbn):
     if req.status_code == 200:
         return req.json()
     else:
-        raise Exception()
+        raise Exception
 
 def read_excel(file_path):
     """Process Excel file."""
@@ -85,30 +101,20 @@ def save_book(book):
     else:
         logger.info('Failed to add {0}'.format(book['Title']))
 
+def main():
+    # Parse command line arguments.
+    try:
+        args = parse_cli_args()
+    except:
+        return 1
 
-# process command line parameters
-parser = argparse.ArgumentParser(description='Import books to RaLibrary.')
-parser.add_argument('--user-name', help='RA-INT account name without ra-int perfix.')
-parser.add_argument('--password', help='RA-INT account password.')
-parser.add_argument('--path', help='Input file path.')
-args = parser.parse_args()
+    # Authentication.
+    try:
+        id_token = login(args.user_name, args.password)
+    except Exception as e:
+        logger.info('[Abort] {0}'.format(e))
+        return 1
 
-# validate authentication info
-if not args.user_name or not args.password:
-    logger.info('[Abort] Missing accout name or password')
-    sys.exit(1)
+    read_excel(args.path)
 
-# validate existence of input excel file
-if not args.path:
-    logger.info('[Abort] Missing input file path.')
-    sys.exit(1)
-
-try:
-    id_token = login(args.user_name, args.password)
-except Exception as e:
-    logger.info('[Abort] {0}'.format(e))
-    sys.exit(1)
-
-read_excel(args.path)
-
-sys.exit(0)
+    return 0

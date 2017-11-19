@@ -1,16 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>7d33163a-2f97-41fd-936c-7fc6913d8f6a</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>xlsx2ralibrary.py</StartupFile>
+    <StartupFile>xlsx2ralibrary\xlsx2ralibrary.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>xlsx2ralibrary</Name>
     <RootNamespace>xlsx2ralibrary</RootNamespace>
+    <InterpreterId>{90adf586-855b-4e87-a8f1-600fd934fedd}</InterpreterId>
+    <InterpreterVersion>3.5</InterpreterVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -24,10 +27,33 @@
     <Compile Include="setup.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="xlsx2ralibrary.py" />
+    <Compile Include="xlsx2ralibrary\xlsx2ralibrary.py" />
+    <Compile Include="xlsx2ralibrary\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="xlsx2ralibrary\__main__.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="requirements.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Interpreter Include="C:\Python_64-bit_3.6_Virtual_Environment\">
+      <Id>{90adf586-855b-4e87-a8f1-600fd934fedd}</Id>
+      <BaseInterpreter>{3f783ee4-e164-4054-af7a-d050c3194209}</BaseInterpreter>
+      <Version>3.5</Version>
+      <Description>Python_64-bit_3.6_Virtual_Environment (Python 64-bit 3.6)</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <LibraryPath>Lib\</LibraryPath>
+      <PathEnvironmentVariable>
+      </PathEnvironmentVariable>
+      <Architecture>Amd64</Architecture>
+    </Interpreter>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="xlsx2ralibrary\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
