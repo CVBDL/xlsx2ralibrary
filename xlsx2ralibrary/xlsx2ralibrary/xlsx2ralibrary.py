@@ -1,19 +1,26 @@
-import time
-import sys
 import argparse
-import json
+import logging
+import openpyxl
 import requests
-from openpyxl import load_workbook, Workbook
-
+import time
 import urllib3
+
+
+# Suppress https certificate warning.
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-import logging
+# Setup logger.
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger('RaLibraryImportTool')
+logger = logging.getLogger('xlsx2ralibrary')
 
 def parse_cli_args():
-    # process command line parameters
+    """Process command line parameters.
+
+    Returns:
+        A dict contains 'user_name', 'password' and 'path'.
+    Raises:
+        Exception: Missing some required parameters.
+    """
     parser = argparse.ArgumentParser(description='Import books to RaLibrary.')
     parser.add_argument('--user-name', help='RA-INT account name without ra-int perfix.')
     parser.add_argument('--password', help='RA-INT account password.')
@@ -28,6 +35,16 @@ def parse_cli_args():
     return args
 
 def login(username, password):
+    """Authenticate with INT domain account.
+
+    Args:
+        username (str): Domain user name.
+        password (str): The password.
+    Returns:
+        str: An id token indicates the user's identity.
+    Raises:
+        Exception: Authentication failed.
+    """
     endpoint = r'https://apcndaec3ycs12.ra-int.com/raauthentication/api/user'
     payload = { 'UserName': username, 'Password': password }
     req = requests.post(endpoint, data=payload, verify=False)
@@ -37,12 +54,29 @@ def login(username, password):
         raise Exception('[Abort] Unauthorized.')
 
 def get_authorization_header(id_token):
+    """Generate authorization http request header.
+
+    Args:
+        id_token (str): The id token.
+    Returns:
+        A dict contains 'Authorization'.
+    Raises:
+        Exception: No id token provided.
+    """
     if not id_token:
         raise Exception('Unauthorized.')
     return { 'Authorization': 'Bearer ' + id_token }
 
 def query_book(isbn):
-    """Query books details via books open API."""
+    """Query books details via books open API.
+
+    Args:
+        isbn (str): Book's ISBN.
+    Returns:
+        A dict of book.
+    Raises:
+        Exception: Query book failed.
+    """
     if not isbn or not isinstance(isbn, str):
         raise Exception
     endpoint = r'https://apcndaec3ycs12.ra-int.com/ralibrary/api/book/isbn/'
@@ -54,15 +88,28 @@ def query_book(isbn):
         raise
 
 def save_book(book, headers):
-    """Save book to RaLibrary."""
+    """Save book to RaLibrary.
+
+    Args:
+        book (dict): Book's data.
+        headers (dict): HTTP header contains 'Authorization'.
+    Raises:
+        Exception: Saving book failed.
+    """
     endpoint = r'https://apcndaec3ycs12.ra-int.com/ralibrary/api/books'
     req = requests.post(endpoint, headers=headers, data=book, verify=False)
-    if req.status_code != 200:
+    if req.status_code != 201:
         raise Exception(req.text)
 
 def read_excel_rows(file_path):
-    """Read excel rows and skip the first header row."""
-    wb = load_workbook(filename=file_path, read_only=True)
+    """Read excel rows and skip the first header row.
+
+    Args:
+        file_path (str): Input excel file path.
+    Returns:
+        Iterable rows.
+    """
+    wb = openpyxl.load_workbook(filename=file_path, read_only=True)
     ws = wb.active
     rows = iter(ws.rows)
     # skip header row
@@ -70,6 +117,13 @@ def read_excel_rows(file_path):
     return rows
 
 def process_row(row):
+    """Parse a row in excel to book model.
+
+    Args:
+        row: A row in excel.
+    Returns:
+        A dict of book data.
+    """
     isbn, code, title = map(lambda cell: str(cell.value), row)
     if not isbn or not code or not title:
         pass
@@ -91,6 +145,7 @@ def process_row(row):
     return book
 
 def main():
+    """Main function to begin the processing."""
     # Parse command line arguments.
     try:
         logger.info('Parsing command line parameters...')
@@ -109,6 +164,7 @@ def main():
         logger.info(e);
         return 1
 
+    # Read input books data.
     try:
         logger.info('Reading Excel file...')
         rows = read_excel_rows(args.path)
@@ -117,9 +173,10 @@ def main():
         logger.info('[Abort] Cannot read the input Excel file.')
         return 1
 
+    # Create books to RaLibrary.
     try:
         # Create a new worksheet inside input Excel file for logging purpose.
-        wb = load_workbook(filename=args.path)
+        wb = openpyxl.load_workbook(filename=args.path)
         ws_name = 'FailedAddedBooks_{0}'.format(str(time.time())[0:10])
         ws_log = wb.create_sheet(title=ws_name)
         # Generate authorization HTTP header.
