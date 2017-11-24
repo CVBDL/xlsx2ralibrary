@@ -11,5 +11,8 @@ setup(
     author='Patrick Zhong',
     license='MIT',
     packages=find_packages(exclude=['tests']),
+    package_data={
+        'xlsx2ralibrary': ['assets/certificate.cer']
+    },
     install_requires=['openpyxl>=2.4.9', 'requests>=2.18.4']
 )

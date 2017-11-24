@@ -12,8 +12,8 @@
     <OutputPath>.</OutputPath>
     <Name>xlsx2ralibrary</Name>
     <RootNamespace>xlsx2ralibrary</RootNamespace>
-    <InterpreterId>{90adf586-855b-4e87-a8f1-600fd934fedd}</InterpreterId>
-    <InterpreterVersion>3.5</InterpreterVersion>
+    <InterpreterId>
+    </InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -27,6 +27,7 @@
     <Compile Include="setup.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="tests\__init__.py" />
     <Compile Include="xlsx2ralibrary\xlsx2ralibrary.py" />
     <Compile Include="xlsx2ralibrary\__init__.py">
       <SubType>Code</SubType>
@@ -37,23 +38,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="requirements.txt" />
+    <Content Include="tests\assets\books.xlsx" />
+    <Content Include="xlsx2ralibrary\assets\certificate.cer" />
   </ItemGroup>
   <ItemGroup>
-    <Interpreter Include="C:\Python_64-bit_3.6_Virtual_Environment\">
-      <Id>{90adf586-855b-4e87-a8f1-600fd934fedd}</Id>
-      <BaseInterpreter>{3f783ee4-e164-4054-af7a-d050c3194209}</BaseInterpreter>
-      <Version>3.5</Version>
-      <Description>Python_64-bit_3.6_Virtual_Environment (Python 64-bit 3.6)</Description>
-      <InterpreterPath>Scripts\python.exe</InterpreterPath>
-      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
-      <LibraryPath>Lib\</LibraryPath>
-      <PathEnvironmentVariable>
-      </PathEnvironmentVariable>
-      <Architecture>Amd64</Architecture>
-    </Interpreter>
-  </ItemGroup>
-  <ItemGroup>
+    <Folder Include="tests\" />
+    <Folder Include="tests\assets\" />
     <Folder Include="xlsx2ralibrary\" />
+    <Folder Include="xlsx2ralibrary\assets\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

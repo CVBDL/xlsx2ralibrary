@@ -1,6 +1,7 @@
 import argparse
 import logging
 import openpyxl
+import os
 import requests
 import time
 import urllib3
@@ -12,6 +13,11 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # Setup logger.
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('xlsx2ralibrary')
+
+# https certificate file path
+certificate_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                'assets',
+                                'certificate.cer')
 
 def parse_cli_args():
     """Process command line parameters.
@@ -47,7 +53,7 @@ def login(username, password):
     """
     endpoint = r'https://apcndaec3ycs12.ra-int.com/raauthentication/api/user'
     payload = { 'UserName': username, 'Password': password }
-    req = requests.post(endpoint, data=payload, verify=False)
+    req = requests.post(endpoint, data=payload, verify=certificate_path)
     if req.status_code == 200:
         return req.json()['IdToken']
     else:
@@ -81,7 +87,7 @@ def query_book(isbn):
         raise Exception
     endpoint = r'https://apcndaec3ycs12.ra-int.com/ralibrary/api/book/isbn/'
     query_endpoint = '{0}{1}'.format(endpoint, isbn)
-    req = requests.get(query_endpoint, verify=False)
+    req = requests.get(query_endpoint, verify=certificate_path)
     if req.status_code == 200:
         return req.json()
     else:
@@ -97,7 +103,7 @@ def save_book(book, headers):
         Exception: Saving book failed.
     """
     endpoint = r'https://apcndaec3ycs12.ra-int.com/ralibrary/api/books'
-    req = requests.post(endpoint, headers=headers, data=book, verify=False)
+    req = requests.post(endpoint, headers=headers, data=book, verify=certificate_path)
     if req.status_code != 201:
         raise Exception(req.text)
 
